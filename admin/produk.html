@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelola Produk - Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <h2>Admin Panel</h2>
+      </div>
+      <nav class="admin-nav">
+        <a href="produk.html" class="nav-item active">
+          <span>📦</span> Produk
+        </a>
+        <a href="order.html" class="nav-item">
+          <span>🛍️</span> Order
+        </a>
+        <a href="setting.html" class="nav-item">
+          <span>⚙️</span> Setting
+        </a>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span>🚪</span> Logout
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Kelola Produk</h1>
+        <button class="btn btn-primary" onclick="openProdukModal()">
+          + Tambah Produk
+        </button>
+      </div>
+
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>Nama</th>
+                  <th>Kategori</th>
+                  <th>Harga</th>
+                  <th>Stok</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="produkTableBody">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem;">
+                    Memuat data...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Tambah/Edit Produk -->
+  <div id="produkModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="produkModalTitle">Tambah Produk</h3>
+        <button class="close-modal" onclick="closeProdukModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="produkForm">
+          <div class="form-group">
+            <label for="namaProduk">Nama Produk</label>
+            <input type="text" id="namaProduk" name="nama" required>
+          </div>
+
+          <div class="form-group">
+            <label for="deskripsiProduk">Deskripsi</label>
+            <textarea id="deskripsiProduk" name="deskripsi"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="hargaProduk">Harga (Rp)</label>
+            <input type="number" id="hargaProduk" name="harga" required min="0">
+          </div>
+
+          <div class="form-group">
+            <label for="stokProduk">Stok</label>
+            <input type="number" id="stokProduk" name="stok" required min="0">
+          </div>
+
+          <div class="form-group">
+            <label for="kategoriProduk">Kategori</label>
+            <select id="kategoriProduk" name="kategori" required>
+              <option value="atasan">Atasan</option>
+              <option value="bawahan">Bawahan</option>
+              <option value="dress">Dress</option>
+              <option value="outer">Outer</option>
+              <option value="aksesoris">Aksesoris</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="fotoProduk">Foto Produk</label>
+            <input type="file" id="fotoProduk" accept="image/*">
+            <div id="fotoPreview" class="image-preview"></div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeProdukModal()">
+              Batal
+            </button>
+            <button type="submit" class="btn btn-primary" id="saveBtn">
+              Simpan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

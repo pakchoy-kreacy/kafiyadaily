@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelola Order - Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <h2>Admin Panel</h2>
+      </div>
+      <nav class="admin-nav">
+        <a href="produk.html" class="nav-item">
+          <span>📦</span> Produk
+        </a>
+        <a href="order.html" class="nav-item active">
+          <span>🛍️</span> Order
+        </a>
+        <a href="setting.html" class="nav-item">
+          <span>⚙️</span> Setting
+        </a>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span>🚪</span> Logout
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Kelola Order</h1>
+      </div>
+
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Tanggal</th>
+                  <th>Customer</th>
+                  <th>Kota</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem;">
+                    Memuat data...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Detail Order -->
+  <div id="orderDetailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detail Order</h3>
+        <button class="close-modal" onclick="closeOrderDetailModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="orderDetailContent">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeOrderDetailModal()">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

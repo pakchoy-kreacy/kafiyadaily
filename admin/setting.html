@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setting Toko - Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <h2>Admin Panel</h2>
+      </div>
+      <nav class="admin-nav">
+        <a href="produk.html" class="nav-item">
+          <span>📦</span> Produk
+        </a>
+        <a href="order.html" class="nav-item">
+          <span>🛍️</span> Order
+        </a>
+        <a href="setting.html" class="nav-item active">
+          <span>⚙️</span> Setting
+        </a>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span>🚪</span> Logout
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Setting Toko</h1>
+      </div>
+
+      <div class="admin-content">
+        <div class="setting-card">
+          <form id="settingForm" class="setting-form">
+            <div class="form-section">
+              <h3>Informasi Toko</h3>
+              
+              <div class="form-group">
+                <label for="namaToko">Nama Toko</label>
+                <input type="text" id="namaToko" name="nama_toko" required>
+              </div>
+
+              <div class="form-group">
+                <label for="waNumber">Nomor WhatsApp</label>
+                <input type="text" id="waNumber" name="wa_number" placeholder="628xxxxxxxxxx" required>
+                <small>Format: 628xxxxxxxxxx (tanpa +)</small>
+              </div>
+
+              <div class="form-group">
+                <label for="kotaAsalId">ID Kota Asal (RajaOngkir)</label>
+                <input type="text" id="kotaAsalId" name="kota_asal_id" required>
+              </div>
+
+              <div class="form-group">
+                <label for="kotaAsalNama">Nama Kota Asal</label>
+                <input type="text" id="kotaAsalNama" name="kota_asal_nama" required>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Tampilan</h3>
+              
+              <div class="form-group">
+                <label for="temaWarna">Warna Tema</label>
+                <input type="color" id="temaWarna" name="tema_warna">
+              </div>
+
+              <div class="form-group">
+                <label for="logoUpload">Logo Toko</label>
+                <input type="file" id="logoUpload" accept="image/*">
+                <div id="logoPreview" class="image-preview"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="bannerUpload">Banner Toko</label>
+                <input type="file" id="bannerUpload" accept="image/*">
+                <div id="bannerPreview" class="image-preview"></div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="saveBtn">
+                Simpan Perubahan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+    // Check login
+    if (!sessionStorage.getItem('adminLoggedIn')) {
+      window.location.href = 'index.html';
+    }
+
+    let currentSetting = null;
+
+    // Load setting saat halaman dimuat
+    async function loadSetting() {
+      try {
+        showLoading();
+        const { data, error } = await supabase
+          .from('setting')
+          .select('*')
+          .eq('id', 1)
+          .single();
+
+        if (error) throw error;
+
+        currentSetting = data;
+        
+        // Isi form
+        document.getElementById('namaToko').value = data.nama_toko || '';
+        document.getElementById('waNumber').value = data.wa_number || '';
+        document.getElementById('kotaAsalId').value = data.kota_asal_id || '';
+        document.getElementById('kotaAsalNama').value = data.kota_asal_nama || '';
+        document.getElementById('temaWarna').value = data.tema_warna || '#8B6F5E';
+
+        // Tampilkan preview gambar jika ada
+        if (data.logo_url) {
+          document.getElementById('logoPreview').innerHTML = `<img src="${data.logo_url}" alt="Logo">`;
+        }
+        if (data.banner_url) {
+          document.getElementById('bannerPreview').innerHTML = `<img src="${data.banner_url}" alt="Banner">`;
+        }
+
+        hideLoading();
+      } catch (error) {
+        console.error('Error loading setting:', error);
+        alert('Gagal memuat setting: ' + error.message);
+        hideLoading();
+      }
+    }
+
+    // Upload gambar ke Supabase Storage
+    async function uploadImage(file, type) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${type}-${Date.now()}.${fileExt}`;
+      const filePath = fileName;
+
+      const { data, error } = await supabase.storage
+        .from('produk-foto')
+        .upload(filePath, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('produk-foto')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    }
+
+    // Preview gambar
+    document.getElementById('logoUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('logoPreview').innerHTML = `<img src="${e.target.result}" alt="Logo Preview">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('bannerUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('bannerPreview').innerHTML = `<img src="${e.target.result}" alt="Banner Preview">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Submit form
+    document.getElementById('settingForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      try {
+        showLoading();
+
+        const formData = new FormData(e.target);
+        const updateData = {
+          nama_toko: formData.get('nama_toko'),
+          wa_number: formData.get('wa_number'),
+          kota_asal_id: formData.get('kota_asal_id'),
+          kota_asal_nama: formData.get('kota_asal_nama'),
+          tema_warna: formData.get('tema_warna'),
+          updated_at: new Date().toISOString()
+        };
+
+        // Upload logo jika ada
+        const logoFile = document.getElementById('logoUpload').files[0];
+        if (logoFile) {
+          // Hapus logo lama jika ada
+          if (currentSetting.logo_url) {
+            const oldLogoPath = currentSetting.logo_url.split('/').pop();
+            await supabase.storage.from('produk-foto').remove([oldLogoPath]);
+          }
+          updateData.logo_url = await uploadImage(logoFile, 'logo');
+        }
+
+        // Upload banner jika ada
+        const bannerFile = document.getElementById('bannerUpload').files[0];
+        if (bannerFile) {
+          // Hapus banner lama jika ada
+          if (currentSetting.banner_url) {
+            const oldBannerPath = currentSetting.banner_url.split('/').pop();
+            await supabase.storage.from('produk-foto').remove([oldBannerPath]);
+          }
+          updateData.banner_url = await uploadImage(bannerFile, 'banner');
+        }
+
+        // Update ke database
+        const { error } = await supabase
+          .from('setting')
+          .update(updateData)
+          .eq('id', 1);
+
+        if (error) throw error;
+
+        alert('Setting berhasil disimpan!');
+        loadSetting();
+      } catch (error) {
+        console.error('Error saving setting:', error);
+        alert('Gagal menyimpan setting: ' + error.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    function logout() {
+      sessionStorage.removeItem('adminLoggedIn');
+      window.location.href = 'index.html';
+    }
+
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    // Load setting on page load
+    loadSetting();
+  </script>
+</body>
+</html>

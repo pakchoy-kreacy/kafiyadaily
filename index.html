@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Toko Fashion Online - Belanja Pakaian dan Aksesoris Terkini">
+  <title>Toko Cantik - Fashion Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo" id="namaTokoHeader">Toko Cantik</div>
+        <div class="header-actions">
+          <div class="cart-icon" id="cartIcon">
+            🛒
+            <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero" id="heroBanner">
+    <div class="container">
+      <div class="hero-content">
+        <h1 id="namaTokoHero">Toko Cantik</h1>
+        <p>Koleksi Fashion Terkini dengan Harga Terbaik</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kategori Filter -->
+  <section class="kategori-section">
+    <div class="container">
+      <div class="kategori-buttons">
+        <button class="kategori-btn active" onclick="filterByKategori('semua')">Semua</button>
+        <button class="kategori-btn" onclick="filterByKategori('atasan')">Atasan</button>
+        <button class="kategori-btn" onclick="filterByKategori('bawahan')">Bawahan</button>
+        <button class="kategori-btn" onclick="filterByKategori('dress')">Dress</button>
+        <button class="kategori-btn" onclick="filterByKategori('outer')">Outer</button>
+        <button class="kategori-btn" onclick="filterByKategori('aksesoris')">Aksesoris</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Produk Grid -->
+  <section class="produk-section">
+    <div class="container">
+      <h2 class="text-center mb-3">Produk Kami</h2>
+      <div class="produk-grid" id="produkGrid">
+        <!-- Produk akan di-render oleh JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 id="namaTokoFooter">Toko Cantik</h3>
+          <p>Toko fashion online terpercaya dengan koleksi terkini dan harga terjangkau.</p>
+        </div>
+        <div class="footer-section">
+          <h3>Kontak</h3>
+          <p>WhatsApp: <span id="waTokoFooter">6281226123571</span></p>
+          <p>Lokasi: <span id="kotaToko">Magetan</span></p>
+        </div>
+        <div class="footer-section">
+          <h3>Informasi</h3>
+          <p>Buka setiap hari</p>
+          <p>Fast response via WhatsApp</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 <span id="namaTokoFooterCopy">Toko Cantik</span>. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cart Panel -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <div class="cart-panel" id="cartPanel">
+    <div class="cart-header">
+      <h2>Keranjang</h2>
+      <button class="close-cart" id="closeCart">×</button>
+    </div>
+    <div class="cart-body">
+      <div class="cart-empty" id="cartEmpty" style="display: none;">
+        <p>Keranjang masih kosong</p>
+      </div>
+      <div class="cart-content" id="cartContent" style="display: none;">
+        <div id="cartItems"></div>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cartTotal">Rp0</span>
+      </div>
+      <button class="btn btn-primary btn-lg" id="checkoutBtn" style="width: 100%;">
+        Checkout
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/toko.js"></script>
+</body>
+</html>

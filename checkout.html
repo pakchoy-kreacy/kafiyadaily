@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Toko Cantik</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <a href="index.html" style="color: inherit;">Toko Cantik</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Checkout Content -->
+  <div class="checkout-container">
+    <h1 class="text-center mb-4">Checkout</h1>
+
+    <!-- Items -->
+    <div class="checkout-section">
+      <h2>Pesanan Anda</h2>
+      <div id="checkoutItems"></div>
+      <div class="summary-row">
+        <span>Subtotal:</span>
+        <span id="subtotalAmount">Rp0</span>
+      </div>
+    </div>
+
+    <!-- Form Data Pengiriman -->
+    <div class="checkout-section">
+      <h2>Data Pengiriman</h2>
+      <form id="checkoutForm">
+        <div class="form-group">
+          <label for="nama">Nama Lengkap</label>
+          <input type="text" id="nama" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Nomor WhatsApp</label>
+          <input type="tel" id="phone" placeholder="628xxxxxxxxxx" required>
+          <small>Format: 628xxxxxxxxxx (tanpa +)</small>
+        </div>
+
+        <div class="form-group">
+          <label for="alamat">Alamat Lengkap</label>
+          <textarea id="alamat" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="kotaTujuan">Kota Tujuan</label>
+          <select id="kotaTujuan" required>
+            <option value="">Memuat kota...</option>
+          </select>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="cekOngkirBtn">
+          Cek Ongkir
+        </button>
+      </form>
+    </div>
+
+    <!-- Pilih Kurir -->
+    <div class="checkout-section" id="ongkirSection" style="display: none;">
+      <h2>Pilih Pengiriman</h2>
+      <div id="ongkirOptions"></div>
+      <div class="summary-row">
+        <span>Ongkir:</span>
+        <span id="ongkirAmount">Rp0</span>
+      </div>
+    </div>
+
+    <!-- Pilih Payment -->
+    <div class="checkout-section" id="paymentSection" style="display: none;">
+      <h2>Metode Pembayaran</h2>
+      <div id="paymentOptions"></div>
+    </div>
+
+    <!-- Total -->
+    <div class="checkout-section">
+      <div class="summary-row">
+        <span><strong>Total Pembayaran:</strong></span>
+        <span id="totalAmount"><strong>Rp0</strong></span>
+      </div>
+      <button type="submit" form="checkoutForm" class="btn btn-success btn-lg" style="width: 100%; margin-top: 1rem;" onclick="processOrder(); return false;">
+        Proses Pesanan
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesanan Berhasil - Toko Cantik</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <a href="index.html" style="color: inherit;">Toko Cantik</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Success Content -->
+  <div class="checkout-container">
+    <div class="checkout-section" style="text-align: center; padding: 4rem 2rem;">
+      <div style="font-size: 4rem; margin-bottom: 1.5rem;">✅</div>
+      <h1 style="color: var(--success); margin-bottom: 1rem;">Pesanan Berhasil!</h1>
+      <p style="font-size: 1.125rem; color: var(--text-light); margin-bottom: 2rem;">
+        Terima kasih telah berbelanja di toko kami.
+      </p>
+      
+      <div id="orderInfo" style="background: var(--bg-secondary); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; text-align: left;">
+        <h3 style="margin-bottom: 1rem;">Informasi Pesanan</h3>
+        <p style="margin-bottom: 0.5rem;">Order ID: <strong id="orderId">-</strong></p>
+        <p style="margin-bottom: 0.5rem;">Status: <span class="badge badge-warning">Menunggu Pembayaran</span></p>
+      </div>
+
+      <div style="background: #FFF3E0; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid var(--warning);">
+        <p style="font-weight: 600; margin-bottom: 0.5rem;">Langkah Selanjutnya:</p>
+        <p style="font-size: 0.95rem; line-height: 1.8;">
+          1. Lakukan pembayaran sesuai instruksi yang diberikan<br>
+          2. Konfirmasi pembayaran melalui WhatsApp kami<br>
+          3. Kami akan segera memproses pesanan Anda
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="index.html" class="btn btn-primary">
+          Belanja Lagi
+        </a>
+        <a href="#" id="contactWA" class="btn btn-success">
+          Hubungi via WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2024 Toko Cantik. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Get order ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+
+    if (orderId) {
+      document.getElementById('orderId').textContent = orderId.substring(0, 8);
+    }
+
+    // Set WhatsApp link
+    const waNumber = '6281226123571'; // Default, bisa diganti
+    document.getElementById('contactWA').href = `https://wa.me/${waNumber}?text=Halo,%20saya%20ingin%20konfirmasi%20pesanan%20dengan%20Order%20ID:%20${orderId ? orderId.substring(0, 8) : '-'}`;
+  </script>
+</body>
+</html>

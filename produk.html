@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Produk - Toko Cantik</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <a href="index.html" style="color: inherit;">Toko Cantik</a>
+        </div>
+        <div class="header-actions">
+          <div class="cart-icon" id="cartIcon">
+            🛒
+            <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Produk Detail -->
+  <section class="produk-section">
+    <div class="container">
+      <div class="checkout-container">
+        <div class="checkout-section">
+          <div id="produkDetail" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+            <!-- Akan di-render oleh JavaScript -->
+          </div>
+        </div>
+        
+        <div class="text-center mt-3">
+          <a href="index.html" class="btn btn-secondary">Kembali ke Toko</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    // Get produk ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const produkId = urlParams.get('id');
+
+    let currentProduk = null;
+    let cart = [];
+
+    // Load cart
+    function loadCart() {
+      const saved = localStorage.getItem('cart');
+      if (saved) {
+        cart = JSON.parse(saved);
+        updateCartBadge();
+      }
+    }
+
+    // Update cart badge
+    function updateCartBadge() {
+      const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+      const badge = document.getElementById('cartBadge');
+      if (badge) {
+        badge.textContent = totalQty;
+        badge.style.display = totalQty > 0 ? 'flex' : 'none';
+      }
+    }
+
+    // Format rupiah
+    function formatRupiah(angka) {
+      return 'Rp' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    // Load produk detail
+    async function loadProdukDetail() {
+      if (!produkId) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+
+        const { data, error } = await supabase
+          .from('produk')
+          .select('*')
+          .eq('id', produkId)
+          .single();
+
+        if (error) throw error;
+
+        currentProduk = data;
+        renderProdukDetail(data);
+      } catch (error) {
+        console.error('Error loading produk:', error);
+        alert('Gagal memuat produk');
+        window.location.href = 'index.html';
+      } finally {
+        document.getElementById('loadingOverlay').style.display = 'none';
+      }
+    }
+
+    // Render produk detail
+    function renderProdukDetail(produk) {
+      const container = document.getElementById('produkDetail');
+      
+      container.innerHTML = `
+        <div class="produk-foto">
+          <img src="${produk.foto_url || 'https://picsum.photos/seed/' + produk.id + '/600/600'}" 
+               alt="${produk.nama}"
+               style="width: 100%; border-radius: 12px;">
+        </div>
+        <div class="produk-info">
+          <h1 style="font-size: 2rem; margin-bottom: 1rem;">${produk.nama}</h1>
+          <p style="font-size: 2rem; color: var(--primary); font-weight: 700; margin-bottom: 1rem;">
+            ${formatRupiah(produk.harga)}
+          </p>
+          <p style="margin-bottom: 1rem; color: var(--text-light);">
+            Stok: <strong>${produk.stok}</strong>
+          </p>
+          <p style="margin-bottom: 1rem; color: var(--text-light);">
+            Kategori: <strong>${produk.kategori}</strong>
+          </p>
+          <div style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 0.5rem;">Deskripsi</h3>
+            <p style="line-height: 1.8;">${produk.deskripsi || 'Tidak ada deskripsi.'}</p>
+          </div>
+          ${produk.stok > 0 ? `
+            <button class="btn btn-primary btn-lg" onclick="addToCart()" style="width: 100%;">
+              Tambah ke Keranjang
+            </button>
+          ` : `
+            <button class="btn btn-disabled btn-lg" disabled style="width: 100%;">
+              Stok Habis
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    // Add to cart
+    function addToCart() {
+      if (!currentProduk) return;
+
+      const existingItem = cart.find(item => item.id === currentProduk.id);
+      
+      if (existingItem) {
+        if (existingItem.qty >= currentProduk.stok) {
+          alert('Stok tidak cukup!');
+          return;
+        }
+        existingItem.qty++;
+      } else {
+        cart.push({
+          id: currentProduk.id,
+          nama: currentProduk.nama,
+          harga: currentProduk.harga,
+          foto_url: currentProduk.foto_url,
+          qty: 1
+        });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      
+      alert('Produk berhasil ditambahkan ke keranjang!');
+    }
+
+    // Cart icon click
+    document.getElementById('cartIcon').addEventListener('click', function() {
+      window.location.href = 'index.html';
+    });
+
+    // Init
+    loadCart();
+    loadProdukDetail();
+  </script>
+</body>
+</html>
